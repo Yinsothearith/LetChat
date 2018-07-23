@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_vader"
+    android:orientation="vertical"
+    tools:context=".ChatActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="20dp"
+                android:fontFamily="@font/mina_regular"
+                android:text="@string/let_chat"
+                android:textSize="20sp" />
+
+            <ImageButton
+                android:id="@+id/ib_setting"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="13dp"
+                android:background="@color/dark_vader"
+                android:src="@drawable/tune_30_1" />
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <View
+        android:id="@+id/toolbar_underline"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/toolbar"
+        android:background="@color/colorWhite" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_chat"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_above="@+id/content_chat"
+        android:layout_below="@+id/toolbar_underline" />
+
+    <RelativeLayout
+        android:id="@+id/content_chat"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:layout_alignParentBottom="true">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorWhite" />
+
+        <ImageView
+            android:id="@+id/iv_emoji"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="14dp"
+            android:src="@drawable/lol_26" />
+
+        <EditText
+            android:id="@+id/et_message"
+            android:layout_width="304dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="15dp"
+            android:layout_toEndOf="@+id/iv_emoji"
+            android:background="@drawable/round_button"
+            android:fontFamily="@font/mina_regular"
+            android:hint="@string/write_a_message"
+            android:paddingStart="11dp"
+            android:textColorHint="@color/colorHint"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="15dp"
+            android:layout_toEndOf="@+id/et_message"
+            android:src="@drawable/paper_plane_24" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

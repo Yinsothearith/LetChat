@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Let Chat</string>
+    <string name="let_chat">LetChat!</string>
+    <string name="name">Name</string>
+    <string name="channel">Channel</string>
+    <string name="join">JOIN</string>
+    <string name="write_a_message">Write a message</string>
+    <string name="close">Close</string>
+    <string name="dark_vader">Dark Vader</string>
+    <string name="beep">Beep</string>
+    <string name="save">Save</string>
+    <string name="theme">Theme</string>
+</resources>

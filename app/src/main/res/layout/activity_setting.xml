@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_vader"
+    tools:context=".SettingActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="20dp"
+                android:fontFamily="@font/mina_regular"
+                android:text="@string/let_chat"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="@font/mina_regular"
+                android:text="@string/close"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <View
+        android:id="@+id/toolbar_underline"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/toolbar"
+        android:background="@color/colorWhite" />
+
+    <TextView
+        android:id="@+id/txt_theme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar_underline"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="35dp"
+        android:fontFamily="@font/mina_regular"
+        android:text="@string/theme"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/txt_theme_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar_underline"
+        android:layout_marginTop="35dp"
+        android:layout_toStartOf="@+id/ib_theme_forward"
+        android:fontFamily="@font/mina_regular"
+        android:text="@string/dark_vader"
+        android:textSize="16sp" />
+
+    <ImageButton
+        android:id="@+id/ib_theme_forward"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/toolbar_underline"
+        android:layout_marginEnd="27dp"
+        android:layout_marginTop="35dp"
+        android:background="@color/dark_vader"
+        android:src="@drawable/forward_32" />
+
+    <TextView
+        android:id="@+id/text_beep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_theme"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="23dp"
+        android:fontFamily="@font/mina_regular"
+        android:text="@string/beep"
+        android:textSize="16sp" />
+
+    <ImageButton
+        android:id="@+id/ib_beep_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/txt_theme_name"
+        android:layout_marginEnd="27dp"
+        android:layout_marginTop="23dp"
+        android:background="@color/dark_vader"
+        android:src="@drawable/checked_50_1" />
+</RelativeLayout>
