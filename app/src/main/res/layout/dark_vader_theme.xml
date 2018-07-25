@@ -2,12 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/content_dark_vader"
     android:background="@color/dark_vader"
     android:paddingEnd="0dp"
     android:paddingStart="36dp">
 
     <TextView
-        android:id="@+id/theme_name"
+        android:id="@+id/dark_vader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/mina_regular"
@@ -18,7 +19,7 @@
         android:id="@+id/primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/theme_name"
+        android:layout_below="@+id/dark_vader"
         android:fontFamily="@font/mina_regular"
         android:text="Primary: "
         android:textSize="14sp" />
@@ -27,13 +28,13 @@
         android:id="@+id/txt_primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/theme_name"
+        android:layout_below="@+id/dark_vader"
         android:layout_toEndOf="@+id/primary"
         android:fontFamily="@font/mina_regular"
         android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/secondary"
+        android:id="@+id/dark_secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txt_primary"
@@ -46,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/primary"
-        android:layout_toEndOf="@+id/secondary"
+        android:layout_toEndOf="@+id/dark_secondary"
         android:fontFamily="@font/mina_regular"
         android:textSize="14sp" />
 

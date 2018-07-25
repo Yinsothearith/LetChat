@@ -2,10 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dark_vader"
-    tools:context=".LoginActivity">
+    tools:context=".activity.LoginActivity">
 
     <ImageView
         android:id="@+id/app_icon"
@@ -51,7 +52,18 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/iv_user"
         android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp" />
+        android:layout_marginStart="20dp"
+        android:background="@color/dark_vader"
+        android:textColor="@color/colorWhite" />
+
+    <View
+        android:id="@+id/username_underline"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@+id/et_name"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:background="@color/colorWhite" />
 
     <ImageView
         android:id="@+id/iv_omnichannel"
@@ -68,27 +80,50 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/et_name"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:layout_toEndOf="@+id/iv_omnichannel"
         android:fontFamily="@font/mina_regular"
         android:text="@string/channel"
         android:textSize="20sp" />
 
-    <EditText
-        android:id="@+id/et_channel"
+    <TextView
+        android:layout_marginTop="10dp"
+        android:id="@+id/txt_channel_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/iv_omnichannel"
+        android:layout_marginEnd="80dp"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/mina_regular"
+        android:text="Channel" />
+
+
+    <Spinner
+        android:prompt="@string/choose_channel"
+        android:id="@+id/sp_list_channel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/channel_underline"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp" />
+
+    <View
+        android:id="@+id/channel_underline"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@+id/txt_channel_name"
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
-        android:drawableEnd="@drawable/forward_32_2" />
+        android:layout_marginTop="2dp"
+        android:background="@color/colorWhite" />
 
     <Button
+        android:id="@+id/btn_join"
         android:layout_width="194dp"
         android:layout_height="64dp"
-        android:layout_below="@+id/et_channel"
+        android:layout_below="@+id/txt_channel_name"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:background="@drawable/round_button"
         android:fontFamily="@font/mina_regular"
         android:text="@string/join"

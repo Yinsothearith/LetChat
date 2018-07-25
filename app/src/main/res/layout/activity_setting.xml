@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/container"
     android:background="@color/dark_vader"
-    tools:context=".SettingActivity">
+    tools:context=".activity.SettingActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -29,6 +30,7 @@
                 android:textSize="20sp" />
 
             <TextView
+                android:id="@+id/txt_close"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -65,24 +67,23 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/toolbar_underline"
         android:layout_marginTop="35dp"
-        android:layout_toStartOf="@+id/ib_theme_forward"
+        android:layout_toStartOf="@+id/iv_theme_forward"
         android:fontFamily="@font/mina_regular"
         android:text="@string/dark_vader"
         android:textSize="16sp" />
 
-    <ImageButton
-        android:id="@+id/ib_theme_forward"
+    <ImageView
+        android:id="@+id/iv_theme_forward"
         android:layout_width="26dp"
         android:layout_height="26dp"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/toolbar_underline"
         android:layout_marginEnd="27dp"
         android:layout_marginTop="35dp"
-        android:background="@color/dark_vader"
         android:src="@drawable/forward_32" />
 
     <TextView
-        android:id="@+id/text_beep"
+        android:id="@+id/txt_beep"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txt_theme"
@@ -92,14 +93,13 @@
         android:text="@string/beep"
         android:textSize="16sp" />
 
-    <ImageButton
-        android:id="@+id/ib_beep_check"
+    <ImageView
+        android:id="@+id/iv_beep_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/txt_theme_name"
         android:layout_marginEnd="27dp"
         android:layout_marginTop="23dp"
-        android:background="@color/dark_vader"
         android:src="@drawable/checked_50_1" />
 </RelativeLayout>

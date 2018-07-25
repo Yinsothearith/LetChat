@@ -3,9 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
     android:background="@color/dark_vader"
     android:orientation="vertical"
-    tools:context=".ChatActivity">
+    tools:context=".activity.ChatActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -28,14 +30,13 @@
                 android:text="@string/let_chat"
                 android:textSize="20sp" />
 
-            <ImageButton
-                android:id="@+id/ib_setting"
+            <ImageView
+                android:id="@+id/iv_setting"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="13dp"
-                android:background="@color/dark_vader"
                 android:src="@drawable/tune_30_1" />
         </RelativeLayout>
 
@@ -48,20 +49,41 @@
         android:layout_below="@+id/toolbar"
         android:background="@color/colorWhite" />
 
+    <TextView
+        android:id="@+id/txt_channel_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar_underline"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/mina_regular"
+        android:text="@string/chichat"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/txt_online_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txt_channel_name"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/mina_regular"
+        android:text="@string/online_now"
+        android:textSize="12sp" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_chat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_above="@+id/content_chat"
-        android:layout_below="@+id/toolbar_underline" />
+        android:layout_below="@+id/txt_online_status" />
 
     <RelativeLayout
         android:id="@+id/content_chat"
         android:layout_width="match_parent"
         android:layout_height="68dp"
-        android:layout_alignParentBottom="true">
+        android:layout_above="@+id/content_emoji">
 
         <View
+            android:id="@+id/recycler_underline"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/colorWhite" />
@@ -78,6 +100,7 @@
             android:id="@+id/et_message"
             android:layout_width="304dp"
             android:layout_height="40dp"
+            android:textColor="@color/dark_vader"
             android:layout_centerVertical="true"
             android:layout_marginStart="15dp"
             android:layout_toEndOf="@+id/iv_emoji"
@@ -89,6 +112,7 @@
             android:textSize="12sp" />
 
         <ImageView
+            android:id="@+id/iv_send"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
@@ -97,6 +121,47 @@
             android:src="@drawable/paper_plane_24" />
 
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/content_emoji"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:paddingEnd="0dp"
+        android:paddingStart="16dp">
+
+        <ImageView
+            android:id="@+id/iv_lol"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:src="@drawable/lol_26" />
+
+        <ImageView
+            android:id="@+id/iv_cry"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="22dp"
+            android:src="@drawable/crying_26_1" />
+
+        <ImageView
+            android:id="@+id/iv_like"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="24dp"
+            android:src="@drawable/facebook_like_32_1" />
+
+        <ImageView
+            android:id="@+id/iv_surprised"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="24dp"
+            android:src="@drawable/surprised_32_1" />
+
+    </LinearLayout>
 
 
 </RelativeLayout>

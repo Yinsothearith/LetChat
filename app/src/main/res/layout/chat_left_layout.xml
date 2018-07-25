@@ -15,6 +15,7 @@
         android:textSize="12sp" />
 
     <TextView
+        android:id="@+id/txt_message"
         android:layout_below="@+id/txt_user_name"
         android:textSize="18sp"
         android:text="What's up?"

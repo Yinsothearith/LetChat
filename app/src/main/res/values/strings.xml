@@ -10,4 +10,7 @@
     <string name="beep">Beep</string>
     <string name="save">Save</string>
     <string name="theme">Theme</string>
+    <string name="choose_channel">Choose Channel</string>
+    <string name="chichat">#Chichat</string>
+    <string name="online_now">Online Now:</string>
 </resources>

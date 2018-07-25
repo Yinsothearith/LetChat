@@ -15,6 +15,7 @@
         android:textSize="12sp" />
 
     <ImageView
+        android:id="@+id/iv_emoji_message"
         android:layout_below="@+id/txt_user_name"
         android:textSize="18sp"
         android:src="@drawable/lol_26"
