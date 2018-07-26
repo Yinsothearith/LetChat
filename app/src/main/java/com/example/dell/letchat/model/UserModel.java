@@ -1,22 +1,35 @@
 package com.example.dell.letchat.model;
 
+import android.graphics.drawable.Drawable;
+
 import java.sql.Timestamp;
 
-public class ChatModel {
+public class UserModel {
 
     private String content;
     private String username;
-    private String id;
     private String type;
-    private String channelId;
     private Timestamp createdAt;
+    private Drawable emoji;
 
-    public ChatModel(String content, String username, String id, String type, String channelId) {
+    public UserModel(String content, String username, String type) {
         this.content = content;
         this.username = username;
-        this.id = id;
         this.type = type;
-        this.channelId = channelId;
+    }
+
+    public UserModel(String username, String type, Drawable emoji) {
+        this.username = username;
+        this.type = type;
+        this.emoji = emoji;
+    }
+
+    public Drawable getEmoji() {
+        return emoji;
+    }
+
+    public void setEmoji(Drawable emoji) {
+        this.emoji = emoji;
     }
 
     public String getContent() {
@@ -35,28 +48,12 @@ public class ChatModel {
         this.username = username;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getChannelId() {
-        return channelId;
-    }
-
-    public void setChannelId(String channelId) {
-        this.channelId = channelId;
     }
 
     public Timestamp getCreatedAt() {

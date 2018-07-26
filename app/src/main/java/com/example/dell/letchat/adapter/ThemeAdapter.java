@@ -25,11 +25,14 @@ public class ThemeAdapter extends BaseAdapter {
     private List<ThemeModel> themeModelList;
     private ThemeClickListener themeClickListener;
     private Context mContext;
+    private int mBackground, mTextColor;
 
-    public ThemeAdapter(Context context, List<ThemeModel> themeModelList, ThemeClickListener clickListener) {
+    public ThemeAdapter(Context context, List<ThemeModel> themeModelList, ThemeClickListener clickListener, int background, int textColor) {
         this.themeModelList = themeModelList;
         this.themeClickListener = clickListener;
         this.mContext = context;
+        this.mBackground = background;
+        this.mTextColor = textColor;
     }
 
     @Override
@@ -52,28 +55,45 @@ public class ThemeAdapter extends BaseAdapter {
         return themeModelList.get(position).getItemType();
     }
 
+    public void setListColor(int background, int textColor){
+        this.mBackground = background;
+        this.mTextColor = textColor;
+        notifyDataSetChanged();
+    }
+
     @SuppressLint({"ResourceAsColor", "CutPasteId"})
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
+        @SuppressLint("ViewHolder")
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dark_vader_theme, parent, false);
 
+        RelativeLayout mContainer = view.findViewById(R.id.container);
+        TextView txtPrimary = view.findViewById(R.id.primary);
+        TextView txtSecondary = view.findViewById(R.id.secondary);
         TextView txtThemeName = view.findViewById(R.id.dark_vader);
-        TextView txtPrimary = view.findViewById(R.id.txt_primary);
-        TextView txtSecondary = view.findViewById(R.id.txt_secondary);
+        final TextView txtValuePrimary = view.findViewById(R.id.txt_primary);
+        TextView txtValueSecondary = view.findViewById(R.id.txt_secondary);
         final ImageView ivCheck = view.findViewById(R.id.iv_check);
+
+        mContainer.setBackgroundColor(mContext.getResources().getColor(mBackground));
+        txtPrimary.setTextColor(mContext.getResources().getColor(mTextColor));
+        txtSecondary.setTextColor(mContext.getResources().getColor(mTextColor));
+        txtThemeName.setTextColor(mContext.getResources().getColor(mTextColor));
+        txtValuePrimary.setTextColor(mContext.getResources().getColor(mTextColor));
+        txtValueSecondary.setTextColor(mContext.getResources().getColor(mTextColor));
+        ivCheck.setColorFilter(mContext.getResources().getColor(mTextColor));
 
         ThemeModel themeModel = themeModelList.get(position);
         txtThemeName.setText(themeModel.getThemeName());
-        txtPrimary.setText(themeModel.getPrimaryColor());
-        txtSecondary.setText(themeModel.getSecondaryColor());
+        txtValuePrimary.setText(themeModel.getPrimaryColor());
+        txtValueSecondary.setText(themeModel.getSecondaryColor());
         ivCheck.setVisibility(View.INVISIBLE);
 
         if (position == 1){
-            txtSecondary.setTextColor(mContext.getResources().getColor(R.color.colorPurple));
+            txtValueSecondary.setTextColor(mContext.getResources().getColor(R.color.colorPurple));
         } else if (position == 2){
-            txtPrimary.setTextColor(mContext.getResources().getColor(R.color.colorYellow));
-            txtSecondary.setTextColor(mContext.getResources().getColor(R.color.colorBlue));
+            txtValueSecondary.setTextColor(mContext.getResources().getColor(R.color.colorBlue));
         }
 
         view.setOnClickListener(new View.OnClickListener() {
@@ -87,6 +107,7 @@ public class ThemeAdapter extends BaseAdapter {
                         themeClickListener.onThemeItemClicked(position);
                         break;
                     default:
+                        txtValuePrimary.setTextColor(mContext.getResources().getColor(mTextColor));
                         themeClickListener.onThemeItemClicked(position);
                         break;
                 }
@@ -94,4 +115,5 @@ public class ThemeAdapter extends BaseAdapter {
         });
         return view;
     }
+
 }

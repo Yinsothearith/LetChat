@@ -93,6 +93,16 @@
         android:text="@string/beep"
         android:textSize="16sp" />
 
+    <TextView
+        android:id="@+id/txt_leave"
+        android:layout_marginStart="36dp"
+        android:fontFamily="@font/mina_regular"
+        android:text="@string/leave_chat"
+        android:layout_marginTop="23dp"
+        android:layout_below="@+id/txt_beep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <ImageView
         android:id="@+id/iv_beep_check"
         android:layout_width="wrap_content"

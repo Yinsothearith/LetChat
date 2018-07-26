@@ -124,7 +124,7 @@
         android:layout_below="@+id/txt_channel_name"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
-        android:background="@drawable/round_button"
+        android:background="@drawable/round_white_button"
         android:fontFamily="@font/mina_regular"
         android:text="@string/join"
         android:textColor="@color/dark_vader"

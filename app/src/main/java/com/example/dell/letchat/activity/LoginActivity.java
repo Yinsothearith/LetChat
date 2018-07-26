@@ -80,15 +80,20 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkActivityColor();
+    }
+
     private void checkActivityColor() {
-        SharedPreferences preferences = getSharedPreferences(AppConstant.USER_PREF, MODE_PRIVATE);
-        mBackgroundColor = preferences.getInt(AppConstant.BACKGROUND_KEY, 0);
-        mTextColor = preferences.getInt(AppConstant.TEXT_COLOR_KEY, 0);
+        SharedPreferences preferences = getSharedPreferences(AppConstant.THEME_PREF, MODE_PRIVATE);
+        int mBackgroundColor = preferences.getInt(AppConstant.BACKGROUND_KEY, 0);
+        int mTextColor = preferences.getInt(AppConstant.TEXT_COLOR_KEY, 0);
 
-        if (mBackgroundColor == 0 && mTextColor == 0) {
-
-        } else
+        if (mBackgroundColor != 0 && mTextColor != 0) {
             setActivityColor(mBackgroundColor, mTextColor);
+        }
     }
 
     private void jsonObjectRequest() {
@@ -148,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
                         Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
-                        intent.putExtra("Online", mOnlineCount);
+                        intent.putExtra("channelId", mChannelId);
                         intent.putExtra("ChannelName", txtChannelName.getText().toString());
                         intent.putExtra("_id", id);
                         intent.putExtra("createdAt", createdAt);

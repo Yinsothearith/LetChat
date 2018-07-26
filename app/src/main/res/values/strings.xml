@@ -13,4 +13,5 @@
     <string name="choose_channel">Choose Channel</string>
     <string name="chichat">#Chichat</string>
     <string name="online_now">Online Now:</string>
+    <string name="leave_chat">Leave Chat</string>
 </resources>

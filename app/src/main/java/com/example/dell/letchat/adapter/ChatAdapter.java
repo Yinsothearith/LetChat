@@ -7,17 +7,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.dell.letchat.R;
-import com.example.dell.letchat.model.ChatModel;
+import com.example.dell.letchat.model.UserModel;
 
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
-    private List<ChatModel> mChatModelList;
+    private List<UserModel> mUserModelList;
+    private int mBackground, mTextColor;
 
     public ChatAdapter(Context context) {
         this.mContext = context;
@@ -37,8 +39,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemViewType(int position) {
 
-        switch (mChatModelList.get(position).getType()){
+        switch (mUserModelList.get(position).getType()){
             case "message":
+                return 2;
+            case "sticker":
+                return 4;
+            case "userMessage":
                 return 1;
             default:
                 return 3;
@@ -47,35 +53,45 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ChatModel chatModel = mChatModelList.get(position);
+        UserModel userModel = mUserModelList.get(position);
 
         switch (holder.getItemViewType()){
             case 1:
                 UserMessageViewHolder userMessageViewHolder = (UserMessageViewHolder) holder;
-                userMessageViewHolder.initMassageView(chatModel);
+                userMessageViewHolder.initColorView();
+                userMessageViewHolder.initMassageView(userModel);
                 break;
             case 2:
                 MemberMessageViewHolder memberMessageViewHolder = (MemberMessageViewHolder) holder;
-                memberMessageViewHolder.initMassageView(chatModel);
+                memberMessageViewHolder.initColorView();
+                memberMessageViewHolder.initMassageView(userModel);
                 break;
             case 3:
                 UserEmojiMessageViewHolder userEmojiMessageViewHolder = (UserEmojiMessageViewHolder) holder;
-                userEmojiMessageViewHolder.initEmojiView(chatModel);
+                userEmojiMessageViewHolder.initColorView();
+                userEmojiMessageViewHolder.initEmojiView(userModel);
                 break;
             default:
                 MemberEmojiMessageViewHolder memberEmojiMessageViewHolder = (MemberEmojiMessageViewHolder) holder;
-                memberEmojiMessageViewHolder.initEmojiView(chatModel);
+                memberEmojiMessageViewHolder.initColorView();
+                memberEmojiMessageViewHolder.initEmojiView(userModel);
                 break;
         }
     }
 
     @Override
     public int getItemCount() {
-        return mChatModelList.size();
+        return mUserModelList.size();
     }
 
-    public void addMessage(List<ChatModel> chatModelList){
-        mChatModelList = chatModelList;
+    public void addMessage(List<UserModel> userModelList){
+        mUserModelList.addAll(0,userModelList);
+        notifyDataSetChanged();
+    }
+
+    public void setColor(int background, int textColor){
+        this.mBackground = background;
+        this.mTextColor = textColor;
         notifyDataSetChanged();
     }
 
@@ -90,9 +106,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             txtMessage = itemView.findViewById(R.id.txt_message);
         }
 
-        void initMassageView(ChatModel chatModel){
-            txtUserName.setText(chatModel.getUsername());
-            txtMessage.setText(chatModel.getContent());
+        void initMassageView(UserModel userModel){
+            txtUserName.setText(userModel.getUsername());
+            txtMessage.setText(userModel.getContent());
+        }
+
+        void initColorView(){
+            txtUserName.setTextColor(mContext.getResources().getColor(mTextColor));
+            txtMessage.setTextColor(mContext.getResources().getColor(mTextColor));
         }
     }
     class MemberMessageViewHolder extends UserMessageViewHolder{
@@ -113,9 +134,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ivEmoji = itemView.findViewById(R.id.iv_emoji_message);
         }
 
-        void initEmojiView(ChatModel chatModel){
-            txtUserName.setText(chatModel.getUsername());
-            ivEmoji.setImageResource(R.drawable.lol_26);
+        void initEmojiView(UserModel userModel){
+            txtUserName.setText(userModel.getUsername());
+            ivEmoji.setImageDrawable(userModel.getEmoji());
+        }
+
+        void initColorView(){
+            txtUserName.setTextColor(mContext.getResources().getColor(mTextColor));
+            ivEmoji.setColorFilter(mContext.getResources().getColor(mTextColor));
         }
     }
 
