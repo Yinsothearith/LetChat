@@ -1,9 +1,14 @@
 package com.example.dell.letchat.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.AnimationDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -36,18 +41,15 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private String mUrlGet = "https://fierce-wildwood-40527.herokuapp.com/api/v1/channels";
-    private String mUrlPost = "https://fierce-wildwood-40527.herokuapp.com/api/v1/users";
     private List<ChannelModel> channelModelList = new ArrayList<>();
     private RelativeLayout mContainer;
     private EditText etUserName;
     private Button btnJoin;
-    private TextView txtAppName, txtName, txtChannel, txtChannelName;
+    private TextView txtAppName, txtName, txtChannel;
     private ImageView ivUser, ivOmnichannel;
     private View channelUnderline, userNameUnderline;
     private Spinner spListChannel;
-    private int mBackgroundColor, mTextColor, mOnlineCount;
-    private String mChannelId;
+    private String mChannelId, mChannelName;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -57,27 +59,35 @@ public class LoginActivity extends AppCompatActivity {
         checkActivityColor();
         jsonObjectRequest();
 
+        if (!isNetworkAvailable()){
+            Toast.makeText(this, "No internet Connection", Toast.LENGTH_SHORT).show();
+        }
+
         spListChannel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                txtChannelName.setText(String.valueOf(parent.getSelectedItem()));
                 ChannelModel model = channelModelList.get(position);
                 mChannelId = model.getId();
-                mOnlineCount = model.getCount() + 1;
+                mChannelName = model.getName();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                txtChannelName.setText("Choose Channel");
+                spListChannel.setPrompt("Choose Channel");
             }
         });
 
         btnJoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                postUser();
+                if (isNetworkAvailable()){
+                    postUser();
+                } else
+                Toast.makeText(LoginActivity.this, "No internet Connection", Toast.LENGTH_SHORT).show();
             }
         });
+
+        etUserName.setText("Lollipop");
     }
 
     @Override
@@ -86,18 +96,9 @@ public class LoginActivity extends AppCompatActivity {
         checkActivityColor();
     }
 
-    private void checkActivityColor() {
-        SharedPreferences preferences = getSharedPreferences(AppConstant.THEME_PREF, MODE_PRIVATE);
-        int mBackgroundColor = preferences.getInt(AppConstant.BACKGROUND_KEY, 0);
-        int mTextColor = preferences.getInt(AppConstant.TEXT_COLOR_KEY, 0);
-
-        if (mBackgroundColor != 0 && mTextColor != 0) {
-            setActivityColor(mBackgroundColor, mTextColor);
-        }
-    }
-
     private void jsonObjectRequest() {
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, mUrlGet, null, new Response.Listener<JSONObject>() {
+        String mUrlGetChannel = "https://fierce-wildwood-40527.herokuapp.com/api/v1/channels";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, mUrlGetChannel, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
@@ -127,17 +128,20 @@ public class LoginActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("Volley Error: ", error.getMessage());
+                try{
+                    Log.d("Volley Error: ", error.getMessage());
+                } catch (Exception e){
+                    Toast.makeText(LoginActivity.this, "Server Down", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         AppController.getInstance().addToRequestQueue(request);
     }
 
     private void postUser() {
-
-        StringRequest postRequest = new StringRequest(Request.Method.POST, mUrlPost,
-                new Response.Listener<String>()
-                {
+        String mUrlPostUser = "https://fierce-wildwood-40527.herokuapp.com/api/v1/users";
+        StringRequest postRequest = new StringRequest(Request.Method.POST, mUrlPostUser,
+                new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         // response
@@ -154,7 +158,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
                         intent.putExtra("channelId", mChannelId);
-                        intent.putExtra("ChannelName", txtChannelName.getText().toString());
+                        intent.putExtra("ChannelName", mChannelName);
                         intent.putExtra("_id", id);
                         intent.putExtra("createdAt", createdAt);
                         intent.putExtra("userName", etUserName.getText().toString());
@@ -162,19 +166,21 @@ public class LoginActivity extends AppCompatActivity {
                         finish();
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d("Response", error.toString());
-                        Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                        String username = etUserName.getText().toString();
+                        if (TextUtils.isEmpty(username)) {
+                            Toast.makeText(LoginActivity.this, "Please Input UserName", Toast.LENGTH_SHORT).show();
+                        } else
+                            Toast.makeText(LoginActivity.this, "UserName has already used", Toast.LENGTH_SHORT).show();
                     }
                 }
         ) {
             @Override
-            protected Map<String, String> getParams()
-            {
-                Map<String, String>  params = new HashMap<String, String>();
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
                 params.put("username", etUserName.getText().toString());
                 params.put("channelId", mChannelId);
 
@@ -184,13 +190,30 @@ public class LoginActivity extends AppCompatActivity {
         AppController.getInstance().addToRequestQueue(postRequest);
     }
 
-    private void setActivityColor(int background, int textColor) {
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void checkActivityColor() {
+        SharedPreferences preferences = getSharedPreferences(AppConstant.THEME_PREF, MODE_PRIVATE);
+        int mBackgroundColor = preferences.getInt(AppConstant.BACKGROUND_KEY, 0);
+        int mTextColor = preferences.getInt(AppConstant.TEXT_COLOR_KEY, 0);
+        int roundView = preferences.getInt(AppConstant.ROUND_VIEW_KEY, 0);
+
+        if (mBackgroundColor != 0 && mTextColor != 0) {
+            setActivityColor(mBackgroundColor, mTextColor, roundView);
+        }
+    }
+
+    private void setActivityColor(int background, int textColor, int roundView) {
         mContainer.setBackground(getDrawable(background));
         etUserName.setBackground(getDrawable(background));
         etUserName.setTextColor(getResources().getColor(textColor));
-        txtChannelName.setTextColor(getResources().getColor(textColor));
         btnJoin.setTextColor(getResources().getColor(background));
-        btnJoin.setBackground(getDrawable(textColor));
+        btnJoin.setBackground(getDrawable(roundView));
         txtAppName.setTextColor(getResources().getColor(textColor));
         txtName.setTextColor(getResources().getColor(textColor));
         txtChannel.setTextColor(getResources().getColor(textColor));
@@ -199,6 +222,7 @@ public class LoginActivity extends AppCompatActivity {
         channelUnderline.setBackground(getDrawable(textColor));
         userNameUnderline.setBackground(getDrawable(textColor));
     }
+
     private void initView() {
         mContainer = findViewById(R.id.container);
         channelUnderline = findViewById(R.id.channel_underline);
@@ -209,7 +233,6 @@ public class LoginActivity extends AppCompatActivity {
         txtName = findViewById(R.id.txt_name);
         txtAppName = findViewById(R.id.app_name);
         etUserName = findViewById(R.id.et_name);
-        txtChannelName = findViewById(R.id.txt_channel_name);
         btnJoin = findViewById(R.id.btn_join);
         spListChannel = findViewById(R.id.sp_list_channel);
     }

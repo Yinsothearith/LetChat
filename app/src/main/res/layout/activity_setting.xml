@@ -94,6 +94,7 @@
         android:textSize="16sp" />
 
     <TextView
+        android:textSize="16sp"
         android:id="@+id/txt_leave"
         android:layout_marginStart="36dp"
         android:fontFamily="@font/mina_regular"

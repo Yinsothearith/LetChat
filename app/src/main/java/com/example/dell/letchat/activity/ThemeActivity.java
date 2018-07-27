@@ -31,7 +31,7 @@ public class ThemeActivity extends AppCompatActivity implements ThemeClickListen
     private View view;
     private int mBackgroundColor = R.color.dark_vader;
     private int mTextColor = R.color.colorWhite;
-    private String colorType;
+    public static String colorType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +56,36 @@ public class ThemeActivity extends AppCompatActivity implements ThemeClickListen
 
     }
 
+    @Override
+    public void onThemeItemClicked(int position) {
+        switch (position) {
+            case 0:
+                mBackgroundColor = R.color.dark_vader;
+                mTextColor = R.color.colorWhite;
+                colorType = "Dark Vader";
+                adapter.setListColor(mBackgroundColor, mTextColor);
+                setActivityColor(mBackgroundColor, mTextColor);
+
+                break;
+            case 1:
+                mBackgroundColor = R.color.colorWhite;
+                mTextColor = R.color.colorPurple;
+                colorType = "JUST WHITE AND PURPLE";
+                adapter.setListColor(mBackgroundColor, mTextColor);
+                setActivityColor(mBackgroundColor, mTextColor);
+
+                break;
+            default:
+                mBackgroundColor = R.color.colorYellow;
+                mTextColor = R.color.colorBlue;
+                colorType = "Minion";
+                adapter.setListColor(mBackgroundColor, mTextColor);
+                setActivityColor(mBackgroundColor, mTextColor);
+
+                break;
+        }
+    }
+
     private void setStaticThemeList() {
         themeModelList.add(new ThemeModel("Dark Vader", "#000000", "#FFFFFF", 1));
         themeModelList.add(new ThemeModel("JUST WHITE AND PURPLE", "#000000", "#443266", 2));
@@ -76,6 +106,25 @@ public class ThemeActivity extends AppCompatActivity implements ThemeClickListen
         }
     }
 
+    private void saveTheme() {
+        SharedPreferences.Editor editor = getSharedPreferences(AppConstant.THEME_PREF, MODE_PRIVATE).edit();
+        editor.putInt(AppConstant.BACKGROUND_KEY, mBackgroundColor);
+        editor.putInt(AppConstant.TEXT_COLOR_KEY, mTextColor);
+        if (colorType.compareTo("Dark Vader") ==0){
+            editor.putInt(AppConstant.ROUND_VIEW_KEY, R.drawable.round_white_button);
+            editor.putString(AppConstant.THEME_NAME, colorType);
+        } else if (colorType.compareTo("JUST WHITE AND PURPLE") == 0){
+            editor.putInt(AppConstant.ROUND_VIEW_KEY, R.drawable.round_purple_button);
+            editor.putString(AppConstant.THEME_NAME, colorType);
+        } else {
+            editor.putInt(AppConstant.ROUND_VIEW_KEY, R.drawable.round_blue_button);
+            editor.putString(AppConstant.THEME_NAME, colorType);
+        }
+        editor.apply();
+        Toast.makeText(this, "Theme has been saved", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
     private void initView() {
         mThemeListView = findViewById(R.id.list_theme_item);
         container = findViewById(R.id.container);
@@ -83,49 +132,6 @@ public class ThemeActivity extends AppCompatActivity implements ThemeClickListen
         txtSave = findViewById(R.id.txtSave);
         view = findViewById(R.id.toolbar_underline);
         ivBack = findViewById(R.id.iv_back);
-    }
-
-    @Override
-    public void onThemeItemClicked(int position) {
-        switch (position) {
-            case 0:
-                mBackgroundColor = R.color.dark_vader;
-                mTextColor = R.color.colorWhite;
-                colorType = "dark";
-                adapter.setListColor(mBackgroundColor, mTextColor);
-                setActivityColor(mBackgroundColor, mTextColor);
-                break;
-            case 1:
-                mBackgroundColor = R.color.colorWhite;
-                mTextColor = R.color.colorPurple;
-                colorType = "white";
-                adapter.setListColor(mBackgroundColor, mTextColor);
-                setActivityColor(mBackgroundColor, mTextColor);
-                break;
-            default:
-                mBackgroundColor = R.color.colorYellow;
-                mTextColor = R.color.colorBlue;
-                colorType = "yellow";
-                adapter.setListColor(mBackgroundColor, mTextColor);
-                setActivityColor(mBackgroundColor, mTextColor);
-                break;
-        }
-    }
-
-    private void saveTheme() {
-        SharedPreferences.Editor editor = getSharedPreferences(AppConstant.THEME_PREF, MODE_PRIVATE).edit();
-        editor.putInt(AppConstant.BACKGROUND_KEY, mBackgroundColor);
-        editor.putInt(AppConstant.TEXT_COLOR_KEY, mTextColor);
-        if (colorType.compareTo("dark") ==0){
-            editor.putInt(AppConstant.ROUND_VIEW_KEY, R.drawable.round_white_button);
-        } else if (colorType.compareTo("white") == 0){
-            editor.putInt(AppConstant.ROUND_VIEW_KEY, R.drawable.round_purple_button);
-        } else {
-            editor.putInt(AppConstant.ROUND_VIEW_KEY, R.drawable.round_blue_button);
-        }
-        editor.apply();
-        Toast.makeText(this, "Theme has been saved", Toast.LENGTH_SHORT).show();
-        finish();
     }
 
     private void setActivityColor(int background, int textColor){

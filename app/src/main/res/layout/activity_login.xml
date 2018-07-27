@@ -5,6 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/dark_vader"
     tools:context=".activity.LoginActivity">
 
@@ -59,7 +60,7 @@
     <View
         android:id="@+id/username_underline"
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
+        android:layout_height="1dp"
         android:layout_below="@+id/et_name"
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
@@ -86,32 +87,20 @@
         android:text="@string/channel"
         android:textSize="20sp" />
 
-    <TextView
-        android:layout_marginTop="10dp"
-        android:id="@+id/txt_channel_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/iv_omnichannel"
-        android:layout_marginEnd="80dp"
-        android:layout_marginStart="20dp"
-        android:fontFamily="@font/mina_regular"
-        android:text="Channel" />
-
-
     <Spinner
+        android:backgroundTint="@color/colorPurple"
         android:prompt="@string/choose_channel"
         android:id="@+id/sp_list_channel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/channel_underline"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="20dp" />
+        android:layout_marginStart="20dp"
+        android:layout_below="@+id/iv_omnichannel" />
 
     <View
         android:id="@+id/channel_underline"
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_below="@+id/txt_channel_name"
+        android:layout_height="1dp"
+        android:layout_below="@+id/sp_list_channel"
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="2dp"
@@ -121,9 +110,9 @@
         android:id="@+id/btn_join"
         android:layout_width="194dp"
         android:layout_height="64dp"
-        android:layout_below="@+id/txt_channel_name"
+        android:layout_below="@+id/sp_list_channel"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/round_white_button"
         android:fontFamily="@font/mina_regular"
         android:text="@string/join"

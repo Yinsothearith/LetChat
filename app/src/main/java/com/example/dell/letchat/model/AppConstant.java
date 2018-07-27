@@ -4,6 +4,8 @@ import android.content.SharedPreferences;
 
 public class AppConstant {
     public static final String THEME_PREF = "THEME_PREF";
+    public static final String BEEP_CHECK = "BEEP_CHECK";
+    public static final String THEME_NAME = "THEME_NAME";
     public static final String BACKGROUND_KEY = "BACKGROUND_KEY";
     public static final String TEXT_COLOR_KEY = "TEXT_COLOR_KEY";
     public static final String ROUND_VIEW_KEY = "ROUND_VIEW_KEY";

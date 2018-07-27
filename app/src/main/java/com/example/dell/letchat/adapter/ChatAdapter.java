@@ -13,17 +13,20 @@ import android.widget.TextView;
 import com.example.dell.letchat.R;
 import com.example.dell.letchat.model.UserModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
-    private List<UserModel> mUserModelList;
+    private List<UserModel> mUserModelList = new ArrayList<>();
     private int mBackground, mTextColor;
 
     public ChatAdapter(Context context) {
         this.mContext = context;
     }
+
+
 
     @NonNull
     @Override
@@ -84,8 +87,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return mUserModelList.size();
     }
 
-    public void addMessage(List<UserModel> userModelList){
-        mUserModelList.addAll(0,userModelList);
+    public void addNewMessage(List<UserModel> userModelList){
+        this.mUserModelList = userModelList;
+        notifyItemRangeChanged(getItemCount() +1, userModelList.size());
+    }
+
+    public void addOldMessage(List<UserModel> userModelList){
+        this.mUserModelList = userModelList;
         notifyDataSetChanged();
     }
 

@@ -4,8 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,7 +32,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.socket.client.IO;
@@ -49,13 +52,15 @@ public class ChatActivity extends AppCompatActivity {
     private View toolbarUnderline, recyclerUnderline, chatUnderline;
     private EditText etMessage;
     private RecyclerView recyclerView;
-    private String addNewMessageUrl = "https://fierce-wildwood-40527.herokuapp.com/chatroom";
     private String mUserId, mUserName, mChannelId;
     public static Socket socket;
-    private int mOnlineCount, mBackground = R.color.dark_vader, mTextColor = R.color.colorWhite, mRoundView = R.drawable.round_white_button;
+    private int mOnlineCount;
+    private int mBackground = R.color.dark_vader, mTextColor = R.color.colorWhite;
     private ChatAdapter mAdapter;
     private List<UserModel> userModelList = new ArrayList<>();
+    private boolean oldOrNew = false, beepCheck = false, isLoadingData = false, isDone = false;
     private boolean keyboardEmoji = true;
+    private int mTotal = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +70,10 @@ public class ChatActivity extends AppCompatActivity {
         checkActivityColor();
         getChatInformation();
         setUpChatRecyclerView();
-        getOldMessage();
+        getOldMessage(0);
 
         try {
+            String addNewMessageUrl = "https://fierce-wildwood-40527.herokuapp.com/chatroom";
             socket = IO.socket(addNewMessageUrl);
             socket.on(Socket.EVENT_CONNECT, onConnect());
             socket.on(Socket.EVENT_DISCONNECT, onDisconnect());
@@ -83,7 +89,7 @@ public class ChatActivity extends AppCompatActivity {
         ivSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendMessage();
+                sendMessage("message", null, null);
             }
         });
 
@@ -98,7 +104,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Drawable image = getResources().getDrawable(R.drawable.lol_26);
-                sendEmojiMessage(image, "lol");
+                sendMessage("sticker", image, "lol");
             }
         });
 
@@ -106,7 +112,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Drawable image = getResources().getDrawable(R.drawable.crying_26_1);
-                sendEmojiMessage(image, "cry");
+                sendMessage("sticker", image, "cry");
             }
         });
 
@@ -114,7 +120,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Drawable image = getResources().getDrawable(R.drawable.facebook_like_32);
-                sendEmojiMessage(image, "like");
+                sendMessage("sticker", image, "like");
             }
         });
 
@@ -122,20 +128,19 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Drawable image = getResources().getDrawable(R.drawable.surprised_32);
-                sendEmojiMessage(image, "surprise");
+                sendMessage("sticker", image, "surprise");
             }
         });
 
         ivKeyboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (keyboardEmoji){
-                    ivKeyboard.setImageDrawable(getDrawable(R.drawable.lol_26));
+                if (keyboardEmoji) {
+                    ivKeyboard.setImageDrawable(getDrawable(R.drawable.keyboard_24_2));
                     mContainEmoji.setVisibility(View.VISIBLE);
                     keyboardEmoji = false;
-                }
-                else {
-                    ivKeyboard.setImageDrawable(getDrawable(R.drawable.keyboard_24_2));
+                } else {
+                    ivKeyboard.setImageDrawable(getDrawable(R.drawable.lol_26));
                     mContainEmoji.setVisibility(View.GONE);
                     keyboardEmoji = true;
                 }
@@ -147,15 +152,22 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                int lastVisibleItem;
-                lastVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
-//                if (!isLoadingData && lastVisibleItem > 5 && !isDone) {
-//                    setOffset(getItemCount());
-//                    onRequestData(onDataResponse);
-//                }
+                int lastVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                Log.e("Index", lastVisibleItem + "");
+                if (!isLoadingData && lastVisibleItem < 10 && !isDone) {
+                    getOldMessage(skipCountToRetrieveOldMessage());
+                }
             }
         });
 
+    }
+
+    public int skipCountToRetrieveOldMessage() {
+        int skip = mAdapter.getItemCount();
+        if (mTotal <= skip) {
+            isDone = true;
+        }
+        return skip;
     }
 
     private Emitter.Listener onConnect() {
@@ -172,7 +184,12 @@ public class ChatActivity extends AppCompatActivity {
         Emitter.Listener onDisconnectListener = new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                Log.e("Connection: ", "Disconnected");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("Connection: ", "Disconnected");
+                    }
+                });
             }
         };
         return onDisconnectListener;
@@ -188,6 +205,7 @@ public class ChatActivity extends AppCompatActivity {
         return onErrorListener;
     }
 
+    @SuppressLint("SimpleDateFormat")
     private Emitter.Listener onAddMessageEvent() {
         Emitter.Listener onAddMessageEventListener = new Emitter.Listener() {
             @Override
@@ -196,29 +214,25 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         JSONObject data = (JSONObject) args[0];
-                        String username;
-                        String content;
-                        String createdAt;
-                        String types;
                         try {
-                            username = data.getString("username");
-                            content = data.getString("content");
-                            createdAt = data.getString("createdAt");
-                            types = data.getString("types");
-//                            @SuppressLint("SimpleDateFormat")
-//                            SimpleDateFormat formattedDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-////                            formattedDate.setTimeZone(TimeZone.getTimeZone("UTC+7"));
-//                            String time = String.valueOf(formattedDate.parse(createdAt));
-//                            Log.e("TimeStamp", time);
-////                            Log.e("DateTime: ", dateFormat.toString());
-//
-//                            SimpleDateFormat formatTime = new SimpleDateFormat("hh:mm:ss", Locale.getDefault());
-//                            Log.e("TimeStamp", String.valueOf(formatTime.parse(time)));
+                            String username = data.getString("username");
+                            String content = data.getString("content");
+                            String createdAt = data.getString("createdAt");
+                            String types = data.getString("types");
+
+                            Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(createdAt);
+                            String timeString = new SimpleDateFormat("HH:mm").format(date.getTime() + 25200000);
 
                             if (username.compareTo(mUserName) == 0) {
                                 Toast.makeText(ChatActivity.this, "Message sent", Toast.LENGTH_SHORT).show();
                             } else {
-                                checkContentMessage(content, username, types);
+                                if (beepCheck) {
+                                    MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.iphone_text_tone);
+                                    if (mediaPlayer.isPlaying()) mediaPlayer.stop();
+                                    mediaPlayer.start();
+                                }
+                                username = username + " - " + timeString;
+                                checkContentMessage(content, username, types, true);
                             }
                         } catch (Exception e) {
                             Log.e("Error", e.toString());
@@ -231,10 +245,16 @@ public class ChatActivity extends AppCompatActivity {
         return onAddMessageEventListener;
     }
 
-    private void getEmojiMessage(String username, String types, Drawable emoji) {
-        userModelList.add(new UserModel(username, types, emoji));
-        mAdapter.addMessage(userModelList);
-        recyclerView.smoothScrollToPosition(mAdapter.getItemCount());
+    private void getEmojiMessage(String username, String types, Drawable emoji, boolean oldOrNew) {
+        if (oldOrNew) {
+            userModelList.add(userModelList.size(), new UserModel(username, types, emoji));
+            mAdapter.addNewMessage(userModelList);
+            recyclerView.smoothScrollToPosition(mAdapter.getItemCount());
+        } else {
+            userModelList.add(0, new UserModel(username, types, emoji));
+            mAdapter.addOldMessage(userModelList);
+            recyclerView.scrollToPosition(29);
+        }
     }
 
     private Emitter.Listener onCountEvent() {
@@ -259,13 +279,14 @@ public class ChatActivity extends AppCompatActivity {
         mChannelId = getIntent().getStringExtra("channelId");
         mUserId = getIntent().getStringExtra("_id");
         mUserName = getIntent().getStringExtra("userName");
-        Log.e("UserName", mUserName);
-        final String createdAt = getIntent().getStringExtra("createdAt");
         txtChannelName.setText(mChannelName);
     }
 
-    private void getOldMessage() {
-        String getMessageUrl = "https://fierce-wildwood-40527.herokuapp.com/api/v1/channels/" + mChannelId + "/messages?limit=5";
+    @SuppressLint("SimpleDateFormat")
+    private void getOldMessage(int skip) {
+        isLoadingData = true;
+        oldOrNew = false;
+        String getMessageUrl = "https://fierce-wildwood-40527.herokuapp.com/api/v1/channels/" + mChannelId + "/messages?limit=20&skipCountToRetrieveOldMessage=" + skip;
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, getMessageUrl, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -275,11 +296,18 @@ public class ChatActivity extends AppCompatActivity {
                         JSONObject message = (JSONObject) data.get(i);
                         String content = message.getString("content");
                         String username = message.getString("username");
+                        String createdAt = message.getString("createdAt");
                         String types = message.getString("types");
 
-                        checkContentMessage(content, username, types);
+                        Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(createdAt);
+                        String timeString = new SimpleDateFormat("HH:mm").format(date.getTime() + 25200000);
+
+                        checkContentMessage(content, username + " - " + timeString, types, oldOrNew);
                     }
-                } catch (JSONException e) {
+                    JSONObject object = response.getJSONObject("options");
+                    mTotal = object.getInt("count");
+                    isLoadingData = false;
+                } catch (JSONException | ParseException e) {
                     e.printStackTrace();
                 }
             }
@@ -298,47 +326,40 @@ public class ChatActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(mAdapter);
-        mAdapter.addMessage(userModelList);
+        mAdapter.addNewMessage(userModelList);
         mAdapter.setColor(mBackground, mTextColor);
-
-        Log.e("rvc"," "+recyclerView.computeVerticalScrollOffset());
     }
 
-    private void sendMessage() {
-        String content = etMessage.getText().toString();
-        userModelList.add(new UserModel(content, mUserName, "userMessage"));
-        mAdapter.addMessage(userModelList);
+    @SuppressLint("SimpleDateFormat")
+    private void sendMessage(String type, Drawable imageId, String contentEmoji) {
+        Date date = Calendar.getInstance().getTime();
+        String currentTime = new SimpleDateFormat("HH:mm").format(date.getTime());
+
+        if (type.compareTo("message") == 0) {
+            String contentMessage = etMessage.getText().toString();
+            userModelList.add(new UserModel(contentMessage, mUserName + " - " + currentTime, "userMessage"));
+            emitNewMessage("message", contentMessage);
+            etMessage.setText(null);
+        } else {
+            userModelList.add(new UserModel(mUserName + " - " + currentTime, "userEmoji", imageId));
+            emitNewMessage("sticker", contentEmoji);
+        }
+
+        mAdapter.addNewMessage(userModelList);
         recyclerView.smoothScrollToPosition(mAdapter.getItemCount());
-        etMessage.setText(null);
 
-        Log.e("UserID", mUserId);
+    }
 
+    private void emitNewMessage(String type, String content) {
         JSONObject json = new JSONObject();
         try {
             json.put("userId", mUserId);
             json.put("content", content);
-            json.put("types", "message");
+            json.put("types", type);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("ddMessage", json.toString());
-
-        socket.emit("newMessage", json);
-    }
-
-    private void sendEmojiMessage(Drawable imageId, String content) {
-        userModelList.add(new UserModel(mUserName, "userEmoji", imageId));
-        mAdapter.addMessage(userModelList);
-        recyclerView.smoothScrollToPosition(mAdapter.getItemCount());
-
-        JSONObject json = new JSONObject();
-        try {
-            json.put("userId", mUserId);
-            json.put("content", content);
-            json.put("types", "sticker");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        Log.e("Message", String.valueOf(json));
         socket.emit("newMessage", json);
     }
 
@@ -359,25 +380,33 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView.smoothScrollToPosition(mAdapter.getItemCount());
     }
 
-    private void checkContentMessage(String content, String username,  String types){
-        switch (content) {
-            case "lol":
-                getEmojiMessage(username, types, getResources().getDrawable(R.drawable.lol_26));
-                break;
-            case "like":
-                getEmojiMessage(username, types, getResources().getDrawable(R.drawable.facebook_like_32));
-                break;
-            case "cry":
-                getEmojiMessage(username, types, getResources().getDrawable(R.drawable.crying_26_1));
-                break;
-            case "surprise":
-                getEmojiMessage(username, types, getResources().getDrawable(R.drawable.surprised_32));
-                break;
-            default:
-                userModelList.add(new UserModel(content, username, types));
-                mAdapter.addMessage(userModelList);
+    private void checkContentMessage(String content, String username, String types, boolean oldOrNew) {
+
+        if (types.compareTo("sticker") == 0)
+            switch (content) {
+                case "lol":
+                    getEmojiMessage(username, types, getResources().getDrawable(R.drawable.lol_26), oldOrNew);
+                    break;
+                case "like":
+                    getEmojiMessage(username, types, getResources().getDrawable(R.drawable.facebook_like_32), oldOrNew);
+                    break;
+                case "cry":
+                    getEmojiMessage(username, types, getResources().getDrawable(R.drawable.crying_26_1), oldOrNew);
+                    break;
+                case "surprise":
+                    getEmojiMessage(username, types, getResources().getDrawable(R.drawable.surprised_32), oldOrNew);
+                    break;
+            }
+        else {
+            if (oldOrNew) {
+                userModelList.add(userModelList.size(), new UserModel(content, username, types));
+                mAdapter.addNewMessage(userModelList);
                 recyclerView.smoothScrollToPosition(mAdapter.getItemCount());
-                break;
+            } else {
+                userModelList.add(0, new UserModel(content, username, types));
+                mAdapter.addOldMessage(userModelList);
+                recyclerView.scrollToPosition(29);
+            }
         }
     }
 
@@ -392,16 +421,12 @@ public class ChatActivity extends AppCompatActivity {
         int backgroundColor = preferences.getInt(AppConstant.BACKGROUND_KEY, 0);
         int textColor = preferences.getInt(AppConstant.TEXT_COLOR_KEY, 0);
         int roundView = preferences.getInt(AppConstant.ROUND_VIEW_KEY, 0);
-
-        Log.e("Color", String.valueOf(backgroundColor));
-        Log.e("Color", String.valueOf(textColor));
-        Log.e("Color", String.valueOf(roundView));
+        beepCheck = preferences.getBoolean(AppConstant.BEEP_CHECK, false);
 
         if (backgroundColor != 0 && textColor != 0) {
             mBackground = backgroundColor;
             mTextColor = textColor;
-            mRoundView = roundView;
-            setActivityColor(mBackground, mTextColor, mRoundView);
+            setActivityColor(mBackground, mTextColor, roundView);
         }
     }
 
@@ -444,4 +469,5 @@ public class ChatActivity extends AppCompatActivity {
         etMessage = findViewById(R.id.et_message);
         recyclerView = findViewById(R.id.rv_chat);
     }
+
 }

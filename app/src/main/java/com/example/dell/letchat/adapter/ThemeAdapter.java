@@ -18,9 +18,9 @@ import java.util.List;
 
 public class ThemeAdapter extends BaseAdapter {
 
-    public static ImageView imageOne;
-    public static ImageView imageTwo;
-    public static ImageView imageThree;
+    public ImageView imageOne;
+    public ImageView imageTwo;
+    public ImageView imageThree;
 
     private List<ThemeModel> themeModelList;
     private ThemeClickListener themeClickListener;
@@ -66,7 +66,7 @@ public class ThemeAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         @SuppressLint("ViewHolder")
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dark_vader_theme, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.theme_layout, parent, false);
 
         RelativeLayout mContainer = view.findViewById(R.id.container);
         TextView txtPrimary = view.findViewById(R.id.primary);
@@ -91,9 +91,13 @@ public class ThemeAdapter extends BaseAdapter {
         ivCheck.setVisibility(View.INVISIBLE);
 
         if (position == 1){
+            imageOne = ivCheck;
             txtValueSecondary.setTextColor(mContext.getResources().getColor(R.color.colorPurple));
         } else if (position == 2){
+            imageTwo = ivCheck;
             txtValueSecondary.setTextColor(mContext.getResources().getColor(R.color.colorBlue));
+        } else {
+            imageThree = ivCheck;
         }
 
         view.setOnClickListener(new View.OnClickListener() {
@@ -101,19 +105,30 @@ public class ThemeAdapter extends BaseAdapter {
             public void onClick(View v) {
                 switch (position){
                     case 0:
+                        imageOne.setVisibility(View.VISIBLE);
+                        imageTwo.setVisibility(View.INVISIBLE);
+                        imageThree.setVisibility(View.INVISIBLE);
                         themeClickListener.onThemeItemClicked(position);
+
                         break;
                     case 1:
+                        imageOne.setVisibility(View.INVISIBLE);
+                        imageTwo.setVisibility(View.VISIBLE);
+                        imageThree.setVisibility(View.INVISIBLE);
                         themeClickListener.onThemeItemClicked(position);
+
                         break;
                     default:
+                        imageOne.setVisibility(View.INVISIBLE);
+                        imageTwo.setVisibility(View.INVISIBLE);
+                        imageThree.setVisibility(View.VISIBLE);
                         txtValuePrimary.setTextColor(mContext.getResources().getColor(mTextColor));
                         themeClickListener.onThemeItemClicked(position);
+
                         break;
                 }
             }
         });
         return view;
     }
-
 }

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -31,11 +32,26 @@ public class SettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
         initView();
+        getPreferenceBeepCheck();
+
+        txtBeep.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkBeep();
+            }
+        });
 
         txtClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        ivBeepCheck.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkBeep();
             }
         });
 
@@ -67,6 +83,44 @@ public class SettingActivity extends AppCompatActivity {
         checkActivityColor();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        savePreferenceBeepCheck();
+    }
+
+    @Override
+    protected void onDestroy() {
+        savePreferenceBeepCheck();
+        super.onDestroy();
+    }
+
+    private void savePreferenceBeepCheck(){
+        SharedPreferences.Editor editor = getSharedPreferences(AppConstant.THEME_PREF, MODE_PRIVATE).edit();
+        if (ivBeepCheck.getVisibility() == View.VISIBLE){
+            editor.putBoolean(AppConstant.BEEP_CHECK, true);
+        } else {
+            editor.putBoolean(AppConstant.BEEP_CHECK, false);
+        }
+        editor.apply();
+    }
+
+    private void getPreferenceBeepCheck(){
+        SharedPreferences preferences = getSharedPreferences(AppConstant.THEME_PREF, MODE_PRIVATE);
+        boolean beepCheck = preferences.getBoolean(AppConstant.BEEP_CHECK, false);
+        Log.e("Setting", String.valueOf(beepCheck));
+        if (beepCheck) {ivBeepCheck.setVisibility(View.VISIBLE);}
+        else ivBeepCheck.setVisibility(View.INVISIBLE);
+    }
+
+    private void checkBeep(){
+        if (ivBeepCheck.getVisibility() == View.VISIBLE){
+            ivBeepCheck.setVisibility(View.INVISIBLE);
+        }else {
+            ivBeepCheck.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void nextThemeActivity() {
         startActivity(new Intent(SettingActivity.this, ThemeActivity.class));
     }
@@ -75,6 +129,9 @@ public class SettingActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences(AppConstant.THEME_PREF, MODE_PRIVATE);
         int mBackgroundColor = preferences.getInt(AppConstant.BACKGROUND_KEY, 0);
         int mTextColor = preferences.getInt(AppConstant.TEXT_COLOR_KEY, 0);
+        String colorType = preferences.getString(AppConstant.THEME_NAME, "");
+
+        txtThemeName.setText(colorType);
 
         if (mBackgroundColor != 0 && mTextColor != 0) {
             setActivityColor(mBackgroundColor, mTextColor);
